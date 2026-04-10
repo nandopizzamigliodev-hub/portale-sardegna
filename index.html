@@ -167,12 +167,20 @@ async function api(params) {
 }
 
 async function apiPost(body) {
+  // Trasformiamo i dati in un formato "semplice" (form-urlencoded)
+  // Questo evita che il browser invii la richiesta di 'preflight' (405 error)
+  const formBody = new URLSearchParams();
+  formBody.append('postData', JSON.stringify(body));
+
   const res = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    headers: { 
+      'Content-Type': 'application/x-www-form-urlencoded' 
+    },
+    body: formBody,
     redirect: 'follow'
   });
+
   return res.json();
 }
 
