@@ -1,15 +1,405 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { height:100vh; overflow:hidden; background:#f8f9fa; }
-    iframe { width:100%; height:100vh; border:none; display:block; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif}
+body{background:#f8f9fa;min-height:100vh;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column}
+
+#loginPage {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#loginPage.hidden { display: none; }
+
+.login-wrap {
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.topbar{background:#fff;padding:15px 20px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:99}
+.page{display:none;padding:20px}
+.page.active{display:block}
+
+input[type=password], input[type=text], select{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px;font-size:16px;outline:none}
+.btn{width:100%;padding:12px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px}
+.btn:disabled{background:#aaa;cursor:not-allowed}
+
+.main{max-width:900px;margin:0 auto}
+.bc{font-size:13px;margin-bottom:15px;color:#1a73e8}
+.toolbar{display:flex;gap:10px;margin-bottom:15px}
+.dz{background:#fff;border:2px dashed #ccc;padding:30px;text-align:center;border-radius:12px;cursor:pointer}
+.dz.drag{border-color:#1a73e8;background:#f1f7ff}
+.list{background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden}
+.row{display:flex;align-items:center;padding:12px 15px;border-bottom:1px solid #f5f5f5;min-height:70px}
+
+.info{flex:1;min-width:0;padding-left:10px;display:flex;flex-direction:column}
+.name{font-size:14px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsize{font-size:11px;color:#888;margin-top:2px}
+
+.actions{display:flex;gap:5px;padding-left:10px}
+.act{display:flex;align-items:center;padding:8px;border:1px solid #eee;border-radius:8px;background:#fff;cursor:pointer;transition:all 0.3s;max-width:38px;overflow:hidden;white-space:nowrap}
+.act span{opacity:0;width:0;transition:0.3s;font-size:11px;font-weight:600}
+@media (hover: hover){
+  .act:hover{max-width:150px;background:#f1f3f4;gap:8px;padding-right:12px}
+  .act:hover span{opacity:1;width:auto}
+}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.preview-window{background:#fff;width:90%;max-width:750px;height:70vh;border-radius:12px;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.4);overflow:hidden}
+.ov-nav{background:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
+.ov-body{flex:1;background:#f0f0f0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ov-body iframe, .ov-body img{width:100%;height:100%;border:none;object-fit:contain;display:block}
+
+#upPanel{position:fixed;bottom:20px;right:20px;width:280px;z-index:1000}
+.up-card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2);margin-top:10px}
+.up-bar{height:4px;background:#eee;margin-top:8px}
+.up-fill{height:100%;background:#1a73e8;width:0%;transition:width 0.3s}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
+.modal-bg.active{display:flex}
+.modal{background:#fff;padding:25px;border-radius:12px;width:90%;max-width:400px}
+.modal h3{margin-bottom:15px}
+
+.spinner{display:inline-block;width:18px;height:18px;border:3px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
-  <iframe src="https://script.google.com/macros/s/AKfycby86wtDv4qoydhij5ihYibgRYmX5OdvDjHiAWRjMj0iA47dOhCtgN-N8nwOGzUNr1s/exec" allow="same-origin" allowfullscreen></iframe>
+
+<div class="topbar" id="topbar" style="display:none">
+  <b>Bando_Sardegna</b>
+  <button onclick="logout()" style="border:none;background:none;color:#888;cursor:pointer">Esci</button>
+</div>
+
+<div id="loginPage">
+  <div class="login-wrap">
+    <h2 style="text-align:center;margin-bottom:24px;font-size:20px;color:#1a1a1a">Accesso Portale</h2>
+    <input type="password" id="pwd" placeholder="Inserisci Password" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="btn" id="loginBtn" onclick="login()">Accedi</button>
+    <p id="loginErr" style="color:#d93025;font-size:13px;margin-top:10px;text-align:center;display:none">Password errata</p>
+  </div>
+</div>
+
+<div class="page" id="mainPage">
+  <div class="main">
+    <div id="bc" class="bc"></div>
+    <div class="toolbar">
+      <button class="btn" style="background:#fff;color:#333;border:1px solid #ddd" onclick="showM('folderM')">📁 Nuova Cartella</button>
+      <button class="btn" onclick="document.getElementById('fin').click()">📤 Carica File</button>
+    </div>
+    <div class="dz" id="dz"
+      onclick="document.getElementById('fin').click()"
+      ondrop="onDrop(event)"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')">
+      <p>Trascina qui i file o clicca per caricare</p>
+    </div>
+    <input type="file" id="fin" multiple style="display:none" onchange="handleFiles(this.files)"/>
+    <div id="upPanel"></div>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="preview-window">
+    <div class="ov-nav">
+      <b id="ovT" style="font-size:13px;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></b>
+      <button onclick="closePre()" style="background:#d93025;color:#fff;border:none;padding:8px 15px;border-radius:6px;font-weight:700;cursor:pointer">CHIUDI X</button>
+    </div>
+    <div class="ov-body" id="ovB"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="folderM">
+  <div class="modal">
+    <h3>Nuova Cartella</h3>
+    <input type="text" id="fnm" placeholder="Nome cartella"/>
+    <button class="btn" onclick="confF()">Crea</button>
+  </div>
+</div>
+<div class="modal-bg" id="renM">
+  <div class="modal">
+    <h3>Rinomina</h3>
+    <input type="text" id="rnm"/>
+    <button class="btn" onclick="confR()">Salva</button>
+  </div>
+</div>
+<div class="modal-bg" id="movM">
+  <div class="modal">
+    <h3>Sposta in...</h3>
+    <select id="mtar" style="margin-bottom:10px"></select>
+    <button class="btn" onclick="confM()">Sposta</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAZIONE — cambia solo questa riga con il tuo link /exec
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycby86wtDv4qoydhij5ihYibgRYmX5OdvDjHiAWRjMj0iA47dOhCtgN-N8nwOGzUNr1s/exec';
+// ============================================================
+// STATO
+// ============================================================
+const CHUNK = 1024 * 1024;
+let curId = null;
+let renI  = { id: null, isF: false };
+let movId = null;
+
+// ============================================================
+// CHIAMATE API REST
+// ============================================================
+async function api(params) {
+  const url = new URL(API_URL);
+  Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+  const res = await fetch(url.toString(), { redirect: 'follow' });
+  return res.json();
+}
+
+async function apiPost(body) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    redirect: 'follow'
+  });
+  return res.json();
+}
+
+// ============================================================
+// LOGIN / LOGOUT
+// ============================================================
+async function login() {
+  const pwd = document.getElementById('pwd').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Accesso...';
+
+  try {
+    const data = await api({ action: 'checkPassword', pwd });
+    if (data.ok) {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('mainPage').classList.add('active');
+      document.getElementById('topbar').style.display = 'flex';
+      loadF(null);
+    } else {
+      err.style.display = 'block';
+    }
+  } catch(e) {
+    err.textContent = 'Errore di connessione. Riprova.';
+    err.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = 'Accedi';
+}
+
+function logout() {
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('mainPage').classList.remove('active');
+  document.getElementById('topbar').style.display = 'none';
+  document.getElementById('pwd').value = '';
+  curId = null;
+}
+
+// ============================================================
+// NAVIGAZIONE CARTELLE
+// ============================================================
+async function loadF(id) {
+  curId = id;
+  document.getElementById('list').innerHTML = '<p style="padding:30px;text-align:center;color:#888">Caricamento...</p>';
+  try {
+    const [contents, path] = await Promise.all([
+      api({ action: 'getFolderContents', folderId: id || '' }),
+      api({ action: 'getFolderPath',     folderId: id || '' })
+    ]);
+    render(contents);
+    document.getElementById('bc').innerHTML = path.map(p =>
+      `<span onclick="loadF('${p.id}')" style="cursor:pointer;margin-right:4px">${p.name}</span>`
+    ).join(' / ');
+  } catch(e) {
+    document.getElementById('list').innerHTML = '<p style="padding:30px;text-align:center;color:#d93025">Errore caricamento</p>';
+  }
+}
+
+function render(data) {
+  let h = (data.folders || []).map(f => `
+    <div class="row" onclick="loadF('${f.id}')">
+      <div style="font-size:24px">📁</div>
+      <div class="info"><span class="name">${f.name}</span></div>
+      <div class="actions">
+        <button class="act" onclick="event.stopPropagation();showR('${f.id}',true,'${esc(f.name)}')">✎<span>Rinomina</span></button>
+      </div>
+    </div>`).join('');
+
+  h += (data.files || []).map(f => `
+    <div class="row">
+      <div style="font-size:24px">📄</div>
+      <div class="info">
+        <span class="name">${f.name}</span>
+        <span class="fsize">${f.size}</span>
+      </div>
+      <div class="actions">
+        <button class="act" onclick="pre('${f.id}','${esc(f.name)}','${f.mime}')">👁️<span>Anteprima</span></button>
+        <button class="act" onclick="showR('${f.id}',false,'${esc(f.name)}')">✎<span>Rinomina</span></button>
+        <button class="act" onclick="showMv('${f.id}')">⬈<span>Sposta</span></button>
+        <button class="act" onclick="dl('${f.id}')">↓<span>Scarica</span></button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('list').innerHTML = h || '<p style="padding:30px;text-align:center;color:#ccc">Cartella vuota</p>';
+}
+
+function esc(s) { return (s || '').replace(/'/g, '').replace(/"/g, ''); }
+
+// ============================================================
+// ANTEPRIMA
+// ============================================================
+async function pre(id, n, m) {
+  document.getElementById('ovT').textContent = n;
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('ovB').innerHTML = '<p style="color:#666;text-align:center;padding-top:50px">Caricamento...</p>';
+  try {
+    const data = await api({ action: 'getPreviewUrl', fileId: id, mime: m });
+    const url = data.url;
+    if (url.startsWith('data:')) {
+      if (m.startsWith('image/')) {
+        document.getElementById('ovB').innerHTML = `<img src="${url}" style="max-width:100%;max-height:100%;">`;
+      } else {
+        document.getElementById('ovB').innerHTML = `<iframe src="${url}"></iframe>`;
+      }
+    } else {
+      window.open(url, '_blank');
+      closePre();
+    }
+  } catch(e) {
+    document.getElementById('ovB').innerHTML = '<p style="color:#d93025;text-align:center;padding-top:50px">Errore anteprima</p>';
+  }
+}
+
+function closePre() {
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('ovB').innerHTML = '';
+}
+
+// ============================================================
+// DOWNLOAD
+// ============================================================
+async function dl(id) {
+  const data = await api({ action: 'getDownloadUrl', fileId: id });
+  window.open(data.url, '_blank');
+}
+
+// ============================================================
+// RINOMINA
+// ============================================================
+function showR(id, f, n) { renI = { id, isF: f }; document.getElementById('rnm').value = n; showM('renM'); }
+async function confR() {
+  closeM('renM');
+  await apiPost({ action: 'renameItem', id: renI.id, isFolder: renI.isF, name: document.getElementById('rnm').value });
+  loadF(curId);
+}
+
+// ============================================================
+// SPOSTA
+// ============================================================
+async function showMv(id) {
+  movId = id;
+  showM('movM');
+  const data = await api({ action: 'getAllFolders' });
+  document.getElementById('mtar').innerHTML = (data.folders || []).map(f =>
+    `<option value="${f.id}">${f.name}</option>`
+  ).join('');
+}
+async function confM() {
+  closeM('movM');
+  await apiPost({ action: 'moveFile', fileId: movId, targetId: document.getElementById('mtar').value });
+  loadF(curId);
+}
+
+// ============================================================
+// NUOVA CARTELLA
+// ============================================================
+async function confF() {
+  closeM('folderM');
+  await apiPost({ action: 'createFolder', name: document.getElementById('fnm').value, parentId: curId || '' });
+  loadF(curId);
+}
+
+// ============================================================
+// UPLOAD A CHUNK
+// ============================================================
+function handleFiles(fs) { for (let f of fs) up(f); }
+function onDrop(e) { e.preventDefault(); document.getElementById('dz').classList.remove('drag'); handleFiles(e.dataTransfer.files); }
+
+function up(file) {
+  const uid = 'u' + Date.now();
+  document.getElementById('upPanel').insertAdjacentHTML('beforeend', `
+    <div id="${uid}" class="up-card">
+      <div style="font-size:11px;display:flex;justify-content:space-between">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px">${file.name}</span>
+        <b id="${uid}p">0%</b>
+      </div>
+      <div class="up-bar"><div id="${uid}f" class="up-fill"></div></div>
+    </div>`);
+
+  const tot = Math.ceil(file.size / CHUNK) || 1;
+  let idx = 0, fId = null;
+
+  async function send() {
+    const slice = file.slice(idx * CHUNK, (idx + 1) * CHUNK);
+    const b64 = await toBase64(slice);
+    const res = await apiPost({
+      action: 'uploadChunk',
+      name: file.name,
+      mime: file.type,
+      data: b64,
+      chunkIndex: idx,
+      totalChunks: tot,
+      fileId: fId,
+      folderId: curId || ''
+    });
+    fId = res.fileId;
+    idx++;
+    const p = Math.round((idx / tot) * 100);
+    document.getElementById(uid + 'p').textContent = p + '%';
+    document.getElementById(uid + 'f').style.width = p + '%';
+    if (idx < tot) {
+      await send();
+    } else {
+      setTimeout(() => { const el = document.getElementById(uid); if (el) el.remove(); }, 2000);
+      loadF(curId);
+    }
+  }
+  send();
+}
+
+function toBase64(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+
+// ============================================================
+// UTILITY MODALI
+// ============================================================
+function showM(id) { document.getElementById(id).classList.add('active'); }
+function closeM(id) { document.getElementById(id).classList.remove('active'); }
+</script>
 </body>
 </html>
