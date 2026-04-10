@@ -40,7 +40,11 @@ input[type=password], input[type=text], select{width:100%;padding:12px;margin:10
 .dz{background:#fff;border:2px dashed #ccc;padding:30px;text-align:center;border-radius:12px;cursor:pointer}
 .dz.drag{border-color:#1a73e8;background:#f1f7ff}
 .list{background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden}
-.row{display:flex;align-items:center;padding:12px 15px;border-bottom:1px solid #f5f5f5;min-height:70px}
+
+/* --- FEEDBACK VISIVO HOVER --- */
+.row{display:flex;align-items:center;padding:12px 15px;border-bottom:1px solid #f5f5f5;min-height:70px;transition: all 0.2s;}
+.row[onclick] { cursor: pointer; }
+.row[onclick]:hover { background-color: #f1f7ff; box-shadow: inset 4px 0 0 #1a73e8; }
 
 .info{flex:1;min-width:0;padding-left:10px;display:flex;flex-direction:column}
 .name{font-size:14px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -128,6 +132,7 @@ input[type=password], input[type=text], select{width:100%;padding:12px;margin:10
     <button class="btn" onclick="confF()">Crea</button>
   </div>
 </div>
+
 <div class="modal-bg" id="renM">
   <div class="modal">
     <h3>Rinomina</h3>
@@ -135,6 +140,7 @@ input[type=password], input[type=text], select{width:100%;padding:12px;margin:10
     <button class="btn" onclick="confR()">Salva</button>
   </div>
 </div>
+
 <div class="modal-bg" id="movM">
   <div class="modal">
     <h3>Sposta in...</h3>
@@ -143,9 +149,20 @@ input[type=password], input[type=text], select{width:100%;padding:12px;margin:10
   </div>
 </div>
 
+<div class="modal-bg" id="confirmM">
+  <div class="modal">
+    <h3 id="confTitle">Conferma</h3>
+    <p id="confText" style="margin-bottom: 20px; font-size: 14px; color: #555; white-space: pre-wrap;"></p>
+    <div style="display:flex; gap:10px">
+      <button class="btn" style="background:#eee; color:#333" onclick="closeM('confirmM')">Annulla</button>
+      <button class="btn" id="confBtn" style="background:#d93025">Elimina</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
-// CONFIGURAZIONE — cambia solo questa riga con il tuo link /exec
+// CONFIGURAZIONE
 // ============================================================
 const API_URL = 'https://script.google.com/macros/s/AKfycby86wtDv4qoydhij5ihYibgRYmX5OdvDjHiAWRjMj0iA47dOhCtgN-N8nwOGzUNr1s/exec'; 
 
@@ -158,7 +175,7 @@ let renI  = { id: null, isF: false };
 let movId = null;
 
 // ============================================================
-// CHIAMATE API REST
+// CHIAMATE API
 // ============================================================
 async function api(params) {
   const url = new URL(API_URL);
@@ -180,7 +197,7 @@ async function apiPost(body) {
 }
 
 // ============================================================
-// LOGIN / LOGOUT
+// LOGICA INTERFACCIA
 // ============================================================
 async function login() {
   const pwd = document.getElementById('pwd').value;
@@ -201,7 +218,7 @@ async function login() {
       err.style.display = 'block';
     }
   } catch(e) {
-    err.textContent = 'Errore di connessione. Riprova.';
+    err.textContent = 'Errore di connessione.';
     err.style.display = 'block';
   }
   btn.disabled = false;
@@ -209,16 +226,9 @@ async function login() {
 }
 
 function logout() {
-  document.getElementById('loginPage').classList.remove('hidden');
-  document.getElementById('mainPage').classList.remove('active');
-  document.getElementById('topbar').style.display = 'none';
-  document.getElementById('pwd').value = '';
-  curId = null;
+  location.reload();
 }
 
-// ============================================================
-// NAVIGAZIONE CARTELLE
-// ============================================================
 async function loadF(id) {
   curId = id;
   document.getElementById('list').innerHTML = '<p style="padding:30px;text-align:center;color:#888">Caricamento...</p>';
@@ -269,77 +279,41 @@ function render(data) {
 function esc(s) { return (s || '').replace(/'/g, '').replace(/"/g, ''); }
 
 // ============================================================
-// ANTEPRIMA
-// ============================================================
-async function pre(id, n, m) {
-  document.getElementById('ovT').textContent = n;
-  document.getElementById('overlay').classList.add('active');
-  document.getElementById('ovB').innerHTML = '<p style="color:#666;text-align:center;padding-top:50px">Caricamento...</p>';
-  try {
-    const data = await api({ action: 'getPreviewUrl', fileId: id, mime: m });
-    const url = data.url;
-    if (url.startsWith('data:')) {
-      if (m.startsWith('image/')) {
-        document.getElementById('ovB').innerHTML = `<img src="${url}" style="max-width:100%;max-height:100%;">`;
-      } else {
-        document.getElementById('ovB').innerHTML = `<iframe src="${url}"></iframe>`;
-      }
-    } else {
-      window.open(url, '_blank');
-      closePre();
-    }
-  } catch(e) {
-    document.getElementById('ovB').innerHTML = '<p style="color:#d93025;text-align:center;padding-top:50px">Errore anteprima</p>';
-  }
-}
-
-function closePre() {
-  document.getElementById('overlay').classList.remove('active');
-  document.getElementById('ovB').innerHTML = '';
-}
-
-// ============================================================
-// DOWNLOAD
-// ============================================================
-async function dl(id) {
-  const data = await api({ action: 'getDownloadUrl', fileId: id });
-  window.open(data.url, '_blank');
-}
-
-// ============================================================
-// CANCELLAZIONE SICURA
+// CANCELLAZIONE (VERSIONE SENZA URL)
 // ============================================================
 async function delI(id, isFolder) {
-  if (!isFolder) {
-    if (confirm("Sei sicuro di voler eliminare questo file?")) {
-      const res = await apiPost({ action: 'deleteItem', id: id, isFolder: false });
-      if (res.ok) loadF(curId);
+  const title = isFolder ? "Elimina Cartella" : "Elimina File";
+  let text = isFolder ? "Sei sicuro di voler eliminare questa cartella?" : "Sei sicuro di voler eliminare questo file?";
+  
+  if (isFolder) {
+    // Controllo contenuto prima di mostrare modale
+    const check = await apiPost({ action: 'checkFolderContent', id: id });
+    if (!check.ok) return alert("Errore: " + check.error);
+    
+    if (!check.isEmpty) {
+      text = "ATTENZIONE! La cartella NON è vuota.\n\nContiene i seguenti elementi:\n" + 
+             "----------------------------------\n" + 
+             check.list + 
+             "\n----------------------------------\n\n" +
+             "Sei ASSOLUTAMENTE sicuro di voler eliminare tutto?";
     }
-    return;
   }
 
-  // Controllo contenuto cartella prima di eliminare
-  const check = await apiPost({ action: 'checkFolderContent', id: id });
-  if (!check.ok) return alert("Errore: " + check.error);
-
-  let msg = "Vuoi eliminare questa cartella?";
-  if (!check.isEmpty) {
-    msg = "ATTENZIONE! La cartella NON è vuota.\n\nContiene i seguenti elementi:\n" + 
-          "----------------------------------\n" + 
-          check.list + 
-          "\n----------------------------------\n\n" +
-          "Sei ASSOLUTAMENTE sicuro di voler eliminare tutto?";
-  }
-
-  if (confirm(msg)) {
-    const res = await apiPost({ action: 'deleteItem', id: id, isFolder: true });
+  // Configura modale personalizzata
+  document.getElementById('confTitle').textContent = title;
+  document.getElementById('confText').textContent = text;
+  document.getElementById('confBtn').onclick = async () => {
+    closeM('confirmM');
+    const res = await apiPost({ action: 'deleteItem', id: id, isFolder: isFolder });
     if (res.ok) loadF(curId);
-    else alert("Errore durante l'eliminazione: " + res.error);
-  }
+    else alert("Errore: " + res.error);
+  };
+  
+  showM('confirmM');
 }
 
 // ============================================================
-// RINOMINA
+// ALTRE OPERAZIONI
 // ============================================================
 function showR(id, f, n) { renI = { id, isF: f }; document.getElementById('rnm').value = n; showM('renM'); }
 async function confR() {
@@ -348,9 +322,6 @@ async function confR() {
   loadF(curId);
 }
 
-// ============================================================
-// SPOSTA
-// ============================================================
 async function showMv(id) {
   movId = id;
   showM('movM');
@@ -359,23 +330,44 @@ async function showMv(id) {
     `<option value="${f.id}">${f.name}</option>`
   ).join('');
 }
+
 async function confM() {
   closeM('movM');
   await apiPost({ action: 'moveFile', fileId: movId, targetId: document.getElementById('mtar').value });
   loadF(curId);
 }
 
-// ============================================================
-// NUOVA CARTELLA
-// ============================================================
 async function confF() {
   closeM('folderM');
   await apiPost({ action: 'createFolder', name: document.getElementById('fnm').value, parentId: curId || '' });
   loadF(curId);
 }
 
+async function dl(id) {
+  const data = await api({ action: 'getDownloadUrl', fileId: id });
+  window.open(data.url, '_blank');
+}
+
+async function pre(id, n, m) {
+  document.getElementById('ovT').textContent = n;
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('ovB').innerHTML = '<p style="padding-top:50px">Caricamento...</p>';
+  try {
+    const data = await api({ action: 'getPreviewUrl', fileId: id, mime: m });
+    if (data.url.startsWith('data:')) {
+      if (m.startsWith('image/')) document.getElementById('ovB').innerHTML = `<img src="${data.url}">`;
+      else document.getElementById('ovB').innerHTML = `<iframe src="${data.url}"></iframe>`;
+    } else {
+      window.open(data.url, '_blank');
+      closePre();
+    }
+  } catch(e) { closePre(); }
+}
+
+function closePre() { document.getElementById('overlay').classList.remove('active'); }
+
 // ============================================================
-// UPLOAD A CHUNK
+// UPLOAD
 // ============================================================
 function handleFiles(fs) { for (let f of fs) up(f); }
 function onDrop(e) { e.preventDefault(); document.getElementById('dz').classList.remove('drag'); handleFiles(e.dataTransfer.files); }
@@ -412,10 +404,9 @@ function up(file) {
     const p = Math.round((idx / tot) * 100);
     document.getElementById(uid + 'p').textContent = p + '%';
     document.getElementById(uid + 'f').style.width = p + '%';
-    if (idx < tot) {
-      await send();
-    } else {
-      setTimeout(() => { const el = document.getElementById(uid); if (el) el.remove(); }, 2000);
+    if (idx < tot) await send();
+    else {
+      setTimeout(() => document.getElementById(uid).remove(), 2000);
       loadF(curId);
     }
   }
@@ -423,17 +414,13 @@ function up(file) {
 }
 
 function toBase64(blob) {
-  return new Promise((res, rej) => {
+  return new Promise((res) => {
     const r = new FileReader();
     r.onload = e => res(e.target.result.split(',')[1]);
-    r.onerror = rej;
     r.readAsDataURL(blob);
   });
 }
 
-// ============================================================
-// UTILITY MODALI
-// ============================================================
 function showM(id) { document.getElementById(id).classList.add('active'); }
 function closeM(id) { document.getElementById(id).classList.remove('active'); }
 </script>
