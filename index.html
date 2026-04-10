@@ -147,7 +147,8 @@ input[type=password], input[type=text], select{width:100%;padding:12px;margin:10
 // ============================================================
 // CONFIGURAZIONE — cambia solo questa riga con il tuo link /exec
 // ============================================================
-const API_URL = 'https://script.google.com/macros/s/AKfycby86wtDv4qoydhij5ihYibgRYmX5OdvDjHiAWRjMj0iA47dOhCtgN-N8nwOGzUNr1s/exec';
+const API_URL = 'INCOLLA_QUI_IL_TUO_NUOVO_LINK_ESECUTIVO'; 
+
 // ============================================================
 // STATO
 // ============================================================
@@ -167,20 +168,14 @@ async function api(params) {
 }
 
 async function apiPost(body) {
-  // Trasformiamo i dati in un formato "semplice" (form-urlencoded)
-  // Questo evita che il browser invii la richiesta di 'preflight' (405 error)
   const formBody = new URLSearchParams();
   formBody.append('postData', JSON.stringify(body));
-
   const res = await fetch(API_URL, {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/x-www-form-urlencoded' 
-    },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formBody,
     redirect: 'follow'
   });
-
   return res.json();
 }
 
@@ -209,7 +204,6 @@ async function login() {
     err.textContent = 'Errore di connessione. Riprova.';
     err.style.display = 'block';
   }
-
   btn.disabled = false;
   btn.innerHTML = 'Accedi';
 }
@@ -249,6 +243,7 @@ function render(data) {
       <div class="info"><span class="name">${f.name}</span></div>
       <div class="actions">
         <button class="act" onclick="event.stopPropagation();showR('${f.id}',true,'${esc(f.name)}')">✎<span>Rinomina</span></button>
+        <button class="act" onclick="event.stopPropagation();delI('${f.id}',true)">🗑️<span>Elimina</span></button>
       </div>
     </div>`).join('');
 
@@ -264,6 +259,7 @@ function render(data) {
         <button class="act" onclick="showR('${f.id}',false,'${esc(f.name)}')">✎<span>Rinomina</span></button>
         <button class="act" onclick="showMv('${f.id}')">⬈<span>Sposta</span></button>
         <button class="act" onclick="dl('${f.id}')">↓<span>Scarica</span></button>
+        <button class="act" onclick="delI('${f.id}',false)">🗑️<span>Elimina</span></button>
       </div>
     </div>`).join('');
 
@@ -308,6 +304,38 @@ function closePre() {
 async function dl(id) {
   const data = await api({ action: 'getDownloadUrl', fileId: id });
   window.open(data.url, '_blank');
+}
+
+// ============================================================
+// CANCELLAZIONE SICURA
+// ============================================================
+async function delI(id, isFolder) {
+  if (!isFolder) {
+    if (confirm("Sei sicuro di voler eliminare questo file?")) {
+      const res = await apiPost({ action: 'deleteItem', id: id, isFolder: false });
+      if (res.ok) loadF(curId);
+    }
+    return;
+  }
+
+  // Controllo contenuto cartella prima di eliminare
+  const check = await apiPost({ action: 'checkFolderContent', id: id });
+  if (!check.ok) return alert("Errore: " + check.error);
+
+  let msg = "Vuoi eliminare questa cartella?";
+  if (!check.isEmpty) {
+    msg = "ATTENZIONE! La cartella NON è vuota.\n\nContiene i seguenti elementi:\n" + 
+          "----------------------------------\n" + 
+          check.list + 
+          "\n----------------------------------\n\n" +
+          "Sei ASSOLUTAMENTE sicuro di voler eliminare tutto?";
+  }
+
+  if (confirm(msg)) {
+    const res = await apiPost({ action: 'deleteItem', id: id, isFolder: true });
+    if (res.ok) loadF(curId);
+    else alert("Errore durante l'eliminazione: " + res.error);
+  }
 }
 
 // ============================================================
