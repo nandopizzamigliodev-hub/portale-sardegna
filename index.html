@@ -774,10 +774,12 @@ function esc(s)  { const d = document.createElement('div'); d.textContent = s ||
 function escQ(s) { return (s || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
 
 // ============================================================
-// OPERAZIONI CON UI OTTIMISTICA
+// OPERAZIONI — la cache viene sempre invalidata e il reload
+// è sempre forzato (forceRefresh=true) dopo azioni dell'utente.
+// La cache serve SOLO per la navigazione tra cartelle già viste.
 // ============================================================
 
-// Rinomina — aggiorna subito la UI, poi sincronizza server
+// Rinomina
 function showR(id, isF, name) {
   renI = { id, isF };
   document.getElementById('rnm').value = name;
@@ -787,21 +789,19 @@ async function confR() {
   const newName = document.getElementById('rnm').value.trim();
   if (!newName) return;
   closeM('renM');
-
-  // Aggiorna subito UI
+  // Aggiorna subito la riga visibile (feedback immediato)
   const row = document.getElementById('row-' + renI.id);
   if (row) row.querySelector('.row-name').textContent = newName;
-
-  // Invalida cache e sincronizza
+  // Manda al server e poi ricarica fresco dal server
   cache.invalidate(curId);
   await apiPost({ action: 'renameItem', id: renI.id, isFolder: renI.isF, name: newName });
+  loadF(curId, true);
 }
 
 // Sposta
 async function showMv(id) {
   movId = id;
   showM('movM');
-  // Usa cache per getAllFolders
   let folders = cache.getFolders();
   if (!folders) {
     document.getElementById('mtar').innerHTML = '<option>Caricamento...</option>';
@@ -816,35 +816,35 @@ async function showMv(id) {
 async function confM() {
   const targetId = document.getElementById('mtar').value;
   closeM('movM');
-  // Ottimistico: rimuovi riga
   const row = document.getElementById('row-' + movId);
   if (row) row.classList.add('removing');
   cache.invalidate(curId);
   await apiPost({ action: 'moveFile', fileId: movId, targetId });
-  setTimeout(() => loadF(curId, true), 300);
+  loadF(curId, true); // sempre fresco
 }
 
-// Crea cartella — ottimistica
+// Crea cartella
 async function confF() {
   const name = document.getElementById('fnm').value.trim();
   if (!name) return;
   closeM('folderM');
-
-  // Aggiungi subito alla lista con ID temporaneo
+  // Mostra riga placeholder grigia mentre il server lavora
   const tmpId = 'tmp-' + Date.now();
   const list = document.getElementById('list');
   const tmpRow = document.createElement('div');
   tmpRow.className = 'row folder-row optimistic';
   tmpRow.id = 'row-' + tmpId;
-  tmpRow.innerHTML = `<div class="row-icon">📁</div><div class="row-info"><div class="row-name">${esc(name)}</div></div>`;
-  list.insertAdjacentElement('afterbegin', tmpRow);
-
+  tmpRow.innerHTML = `<div class="row-icon">📁</div><div class="row-info"><div class="row-name">${esc(name)}</div><div class="row-meta">Creazione in corso...</div></div>`;
+  // Inserisci dopo eventuali altre cartelle, prima dei file
+  const firstFile = list.querySelector('.row:not(.folder-row)');
+  firstFile ? list.insertBefore(tmpRow, firstFile) : list.appendChild(tmpRow);
+  // Aspetta risposta server, poi ricarica SEMPRE fresco
   cache.invalidate(curId);
   await apiPost({ action: 'createFolder', name, parentId: curId || '' });
-  loadF(curId, true); // refresh vero dopo creazione
+  loadF(curId, true);
 }
 
-// Elimina — con UI ottimistica post-conferma
+// Elimina
 async function delI(id, isFolder) {
   const title = isFolder ? 'Elimina Cartella' : 'Elimina File';
   let text = isFolder ? 'Sei sicuro di voler eliminare questa cartella?' : 'Sei sicuro di voler eliminare questo file?';
@@ -861,13 +861,12 @@ async function delI(id, isFolder) {
   document.getElementById('confText').textContent  = text;
   document.getElementById('confBtn').onclick = async () => {
     closeM('confirmM');
-    // Ottimistico: animazione rimozione
     const row = document.getElementById('row-' + id);
     if (row) row.classList.add('removing');
     cache.invalidate(curId);
     const res = await apiPost({ action: 'deleteItem', id, isFolder });
-    if (!res.ok) { alert('Errore: ' + res.error); loadF(curId, true); }
-    else setTimeout(() => loadF(curId), 300);
+    if (!res.ok) { alert('Errore: ' + res.error); }
+    loadF(curId, true); // sempre fresco, anche in caso di errore
   };
   showM('confirmM');
 }
@@ -934,8 +933,8 @@ function up(file) {
     if (idx < tot) { await send(); }
     else {
       document.getElementById(uid + 's').textContent = '✅ Completato';
-      cache.invalidate(curId); // invalida cache cartella corrente
-      setTimeout(() => { document.getElementById(uid)?.remove(); loadF(curId); }, 1500);
+      cache.invalidate(curId);
+      setTimeout(() => { document.getElementById(uid)?.remove(); loadF(curId, true); }, 1500);
     }
   }
   send().catch(() => {
