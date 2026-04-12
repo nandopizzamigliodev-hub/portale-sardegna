@@ -819,8 +819,9 @@ async function confM() {
   const row = document.getElementById('row-' + movId);
   if (row) row.classList.add('removing');
   cache.invalidate(curId);
+  cache.invalidate(targetId); // invalida anche la cartella di destinazione
   await apiPost({ action: 'moveFile', fileId: movId, targetId });
-  loadF(curId, true); // sempre fresco
+  loadF(curId, true);
 }
 
 // Crea cartella
