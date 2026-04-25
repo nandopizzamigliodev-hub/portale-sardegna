@@ -45,12 +45,7 @@ body {
   border-radius: var(--radius);
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  transition: var(--transition);
-}
+button { font-family: inherit; cursor: pointer; border: none; transition: var(--transition); }
 
 input, select {
   font-family: inherit;
@@ -70,28 +65,15 @@ input:focus, select:focus {
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  background: var(--primary); color: #fff; padding: 12px 24px; border-radius: 10px;
+  font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-main);
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-weight: 500;
-  font-size: 14px;
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.1); color: var(--text-main); padding: 10px 18px;
+  border-radius: 10px; font-weight: 500; font-size: 14px; border: 1px solid var(--glass-border);
 }
 .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
 
@@ -100,51 +82,28 @@ input:focus, select:focus {
 
 /* ===== LOGIN PAGE ===== */
 #loginPage {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  position: absolute;
-  inset: 0;
-  z-index: 100;
+  flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px;
+  position: absolute; inset: 0; z-index: 100;
 }
 #loginPage.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
 
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  padding: 48px 40px;
-  text-align: center;
-}
+.login-card { width: 100%; max-width: 400px; padding: 48px 40px; text-align: center; }
 .login-card h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 32px; }
 .login-card .field { margin-bottom: 16px; text-align: left;}
 .login-card .btn-primary { width: 100%; margin-top: 24px; }
 
 /* ===== MAIN APP ===== */
-#mainPage {
-  display: none;
-  opacity: 0;
-  padding: 24px;
-  transition: opacity 0.5s ease;
-  flex: 1;
-}
+#mainPage { display: none; opacity: 0; padding: 24px; transition: opacity 0.5s ease; flex: 1; }
 #mainPage.active { display: block; opacity: 1; }
 .container { max-width: 1000px; margin: 0 auto; }
 
 /* ===== TOPBAR ===== */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  margin-bottom: 32px;
-}
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; margin-bottom: 32px; }
 .brand { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 .brand span { font-size: 24px; }
 .topbar-actions { display: flex; gap: 12px; align-items: center;}
-#adminBtn { display: none; } /* Mostrato solo se admin */
+#adminBtn { display: none; }
 
 /* ===== TOOLBAR & BREADCRUMB ===== */
 .header-actions { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;}
@@ -153,62 +112,40 @@ input:focus, select:focus {
 .bc-item:hover { background: rgba(59, 130, 246, 0.1); }
 .bc-sep { color: var(--text-muted); }
 
-.toolbar { display: flex; gap: 12px; }
+.toolbar { display: flex; gap: 12px; align-items: center;}
+.btn-refresh { font-size: 18px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; color: var(--text-main); border: 1px solid var(--glass-border); transition: var(--transition); line-height: 1;}
+.btn-refresh:hover { background: rgba(255,255,255,0.15); }
+.btn-refresh.spinning { animation: spin 0.8s linear infinite; pointer-events: none; }
 
 /* ===== DROPZONE ===== */
 .dropzone {
-  border: 2px dashed rgba(255,255,255,0.2);
-  padding: 32px;
-  text-align: center;
-  border-radius: var(--radius);
-  color: var(--text-muted);
-  cursor: pointer;
-  margin-bottom: 24px;
-  transition: var(--transition);
+  border: 2px dashed rgba(255,255,255,0.2); padding: 32px; text-align: center; border-radius: var(--radius);
+  color: var(--text-muted); cursor: pointer; margin-bottom: 24px; transition: var(--transition);
 }
-.dropzone:hover, .dropzone.drag {
-  border-color: var(--primary);
-  background: rgba(59, 130, 246, 0.05);
-  color: var(--primary);
-}
+.dropzone:hover, .dropzone.drag { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); color: var(--primary); }
 
 /* ===== FILE LIST ===== */
 .list-container { overflow: hidden; }
 .list-header {
-  display: flex;
-  padding: 16px 24px;
-  background: rgba(0,0,0,0.2);
-  border-bottom: 1px solid var(--glass-border);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  display: flex; padding: 16px 24px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border);
+  font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; align-items: center;
 }
-.row {
-  display: flex;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  transition: var(--transition);
-}
+#cacheBadge { margin-left: 8px; font-size: 10px; background: rgba(234, 179, 8, 0.2); color: #fde047; padding: 2px 8px; border-radius: 12px; display: none; }
+.row { display: flex; align-items: center; padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: var(--transition); }
 .row:hover { background: rgba(255,255,255,0.03); }
 .row:last-child { border-bottom: none; }
 .row.folder { cursor: pointer; }
+.row.removing { opacity: 0; max-height: 0; padding: 0; overflow: hidden; border: none; }
 
 .row-icon { font-size: 24px; width: 40px; }
 .row-name { flex: 1; font-weight: 500; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 16px;}
 .row-meta { width: 100px; color: var(--text-muted); font-size: 13px; text-align: right; }
-.row-actions { display: flex; gap: 8px; margin-left: 16px; opacity: 0; transition: opacity 0.2s;}
+.row-actions { display: flex; gap: 6px; margin-left: 16px; opacity: 0; transition: opacity 0.2s;}
 .row:hover .row-actions { opacity: 1; }
 
 .btn-icon {
-  background: rgba(255,255,255,0.1);
-  color: var(--text-main);
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+  background: rgba(255,255,255,0.1); color: var(--text-main); width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
 }
 .btn-icon:hover { background: var(--primary); color: white; transform: scale(1.05); }
 .btn-icon.danger:hover { background: var(--danger); }
@@ -216,18 +153,41 @@ input:focus, select:focus {
 /* ===== TOAST NOTIFICATIONS ===== */
 #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
 .toast {
-  background: rgba(15, 23, 42, 0.9);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(15, 23, 42, 0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
   animation: slideUpToast 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
 }
 @keyframes slideUpToast { from { opacity: 0; transform: translateY(20px); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+
+/* ===== UPLOAD PANEL ===== */
+#upPanel { position: fixed; bottom: 24px; right: 24px; width: 320px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
+.up-card {
+  background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); padding: 16px; border-radius: 12px;
+  box-shadow: var(--glass-shadow); border-left: 4px solid var(--primary); animation: slideInUp 0.3s ease;
+}
+@keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } }
+.up-filename { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 8px; }
+.up-status { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
+.up-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.up-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s ease; }
+
+/* ===== PREVIEW OVERLAY ===== */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.overlay.active { opacity: 1; pointer-events: auto; }
+.preview-win {
+  width: 90%; max-width: 900px; height: 85vh; display: flex; flex-direction: column; border-radius: var(--radius); overflow: hidden;
+  transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.overlay.active .preview-win { transform: scale(1); }
+.preview-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--glass-border); background: rgba(30,41,59,0.9); }
+.preview-title { font-weight: 600; font-size: 16px; }
+.preview-body { flex: 1; background: rgba(15,23,42,0.9); display: flex; align-items: center; justify-content: center; }
+.preview-body iframe, .preview-body img { width: 100%; height: 100%; border: none; object-fit: contain; }
 
 /* ===== MODALS ===== */
 .modal-overlay {
@@ -254,7 +214,7 @@ input:focus, select:focus {
 .user-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center; }
 .user-row:last-child { border-bottom: none; }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .row-actions { opacity: 1; }
   .row-meta { display: none; }
@@ -265,8 +225,9 @@ input:focus, select:focus {
 </head>
 <body>
 
-<!-- TOAST CONTAINER -->
+<!-- TOAST CONTAINER & UPLOAD PANEL -->
 <div id="toast-container"></div>
+<div id="upPanel"></div>
 
 <!-- LOGIN PAGE -->
 <div id="loginPage" class="glass">
@@ -290,7 +251,7 @@ input:focus, select:focus {
     <div class="topbar glass">
       <div class="brand"><span>✨</span> Portale Sardegna</div>
       <div class="topbar-actions">
-        <button id="adminBtn" class="btn-secondary" onclick="openAdmin()">⚙️ Gestione Utenti</button>
+        <button id="adminBtn" class="btn-secondary" onclick="openModal('adminModal'); loadAdminUsers();">⚙️ Gestione Utenti</button>
         <button class="btn-secondary" onclick="logout()">Esci</button>
       </div>
     </div>
@@ -300,6 +261,7 @@ input:focus, select:focus {
       <div class="toolbar">
         <button class="btn-secondary" onclick="openModal('folderModal')">📁 Nuova Cartella</button>
         <button class="btn-primary" onclick="document.getElementById('fileInput').click()">📤 Carica File</button>
+        <button class="btn-refresh" id="refreshBtn" onclick="refreshFolder()" title="Aggiorna">↻</button>
       </div>
     </div>
 
@@ -314,7 +276,9 @@ input:focus, select:focus {
 
     <div class="list-container glass">
       <div class="list-header">
-        <div style="flex:1">Nome</div>
+        <div style="flex:1; display:flex; align-items:center;">
+          Contenuto <span id="cacheBadge">⚡ Cache</span>
+        </div>
         <div style="width:100px; text-align:right">Dimensione</div>
       </div>
       <div id="fileList">
@@ -322,6 +286,19 @@ input:focus, select:focus {
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- PREVIEW OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="preview-win glass">
+    <div class="preview-nav">
+      <div class="preview-title" id="ovT">Titolo File</div>
+      <button class="btn-danger" onclick="closePreview()">✕ Chiudi</button>
+    </div>
+    <div class="preview-body" id="ovB">
+      <div class="spinner"></div>
+    </div>
   </div>
 </div>
 
@@ -345,6 +322,18 @@ input:focus, select:focus {
     <div class="actions">
       <button class="btn-secondary" onclick="closeModal('renameModal')">Annulla</button>
       <button class="btn-primary" onclick="renameItem()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SPOSTA -->
+<div class="modal-overlay" id="moveModal" onclick="closeOnBg(event, 'moveModal')">
+  <div class="modal glass">
+    <h3>Sposta in...</h3>
+    <select id="moveTarget"></select>
+    <div class="actions">
+      <button class="btn-secondary" onclick="closeModal('moveModal')">Annulla</button>
+      <button class="btn-primary" onclick="moveFile()">Sposta</button>
     </div>
   </div>
 </div>
@@ -380,24 +369,44 @@ input:focus, select:focus {
 const API_URL = 'https://script.google.com/macros/s/AKfycby86wtDv4qoydhij5ihYibgRYmX5OdvDjHiAWRjMj0iA47dOhCtgN-N8nwOGzUNr1s/exec';
 const CHUNK_SIZE = 1024 * 1024; // 1MB
 
+// ============================================================
+// CACHE SYSTEM (Migliorata per UX istantanea)
+// ============================================================
+const cache = {
+  _store: {},          
+  _folders: null,      
+  TTL: 5 * 60 * 1000, 
+
+  get(id) {
+    const key = id || '__root__';
+    const entry = this._store[key];
+    if (!entry) return null;
+    if (Date.now() - entry.ts > this.TTL) { delete this._store[key]; return null; }
+    return entry.data;
+  },
+  set(id, data) { this._store[id || '__root__'] = { data, ts: Date.now() }; },
+  invalidate(id) { delete this._store[id || '__root__']; },
+  invalidateAll() { this._store = {}; this._folders = null; },
+  setFolders(data) { this._folders = data; },
+  getFolders() { return this._folders; }
+};
+
 // STATO
 let currentFolderId = null;
 let renameTarget = { id: null, isFolder: false };
+let moveTargetId = null;
 
 // ============================================================
 // CORE API CALLS
 // ============================================================
 function getCredentials() {
-  return {
-    username: sessionStorage.getItem('ps_user') || '',
-    pwd:      sessionStorage.getItem('ps_pwd') || ''
-  };
+  return { username: sessionStorage.getItem('ps_user') || '', pwd: sessionStorage.getItem('ps_pwd') || '' };
 }
 
 async function api(params) {
   const url = new URL(API_URL);
   const creds = getCredentials();
-  Object.assign(params, creds); // Inietta credenziali
+  Object.assign(params, creds); 
   Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
   
   const res = await fetch(url.toString(), { redirect: 'follow' });
@@ -408,17 +417,11 @@ async function api(params) {
 
 async function apiPost(body) {
   const creds = getCredentials();
-  Object.assign(body, creds); // Inietta credenziali
-  
+  Object.assign(body, creds);
   const form = new URLSearchParams();
   form.append('postData', JSON.stringify(body));
   
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: form,
-    redirect: 'follow'
-  });
+  const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form, redirect: 'follow' });
   const data = await res.json();
   if (data.error) throw new Error(data.error);
   return data;
@@ -429,8 +432,7 @@ async function apiPost(body) {
 // ============================================================
 function showToast(msg) {
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  t.className = 'toast'; t.textContent = msg;
   document.getElementById('toast-container').appendChild(t);
   setTimeout(() => t.remove(), 3000);
 }
@@ -439,11 +441,7 @@ function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 function closeOnBg(e, id) { if(e.target.id === id) closeModal(id); }
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
+function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
 function getIcon(mime) {
   if (!mime) return '📁';
@@ -451,7 +449,7 @@ function getIcon(mime) {
   if (mime.includes('video')) return '🎬';
   if (mime.includes('pdf')) return '📕';
   if (mime.includes('sheet') || mime.includes('excel')) return '📊';
-  if (mime.includes('zip') || mime.includes('rar')) return '🗜️';
+  if (mime.includes('zip') || mime.includes('rar') || mime.includes('archive')) return '🗜️';
   return '📄';
 }
 
@@ -467,7 +465,6 @@ async function login() {
   const spin = document.getElementById('loginSpin');
   btn.disabled = true; spin.style.display = 'inline-block';
 
-  // Salva temporaneamente per la chiamata
   sessionStorage.setItem('ps_user', u);
   sessionStorage.setItem('ps_pwd', p);
 
@@ -478,7 +475,6 @@ async function login() {
       document.getElementById('mainPage').classList.add('active');
       if (res.isAdmin) document.getElementById('adminBtn').style.display = 'block';
       loadFolder(null);
-      showToast("Accesso effettuato");
     }
   } catch (err) {
     showToast(err.message || "Credenziali errate");
@@ -487,12 +483,8 @@ async function login() {
   btn.disabled = false; spin.style.display = 'none';
 }
 
-function logout() {
-  sessionStorage.clear();
-  location.reload();
-}
+function logout() { sessionStorage.clear(); location.reload(); }
 
-// Check session on load
 window.onload = async () => {
   if (sessionStorage.getItem('ps_user')) {
     try {
@@ -508,18 +500,40 @@ window.onload = async () => {
 // ============================================================
 // FILE MANAGER
 // ============================================================
-async function loadFolder(id) {
+async function loadFolder(id, forceRefresh = false) {
   currentFolderId = id;
+  const badge = document.getElementById('cacheBadge');
+  
+  const cached = !forceRefresh && cache.get(id);
+  if (cached) {
+    renderBreadcrumb(cached.path);
+    renderFiles(cached.folders, cached.files);
+    badge.style.display = 'inline-block';
+    return;
+  }
+  
+  badge.style.display = 'none';
   const list = document.getElementById('fileList');
   list.innerHTML = '<div style="padding:40px; text-align:center"><div class="spinner" style="margin:0 auto"></div></div>';
   
   try {
     const data = await api({ action: 'getFolderData', folderId: id || '' });
+    cache.set(id, data);
     renderBreadcrumb(data.path);
     renderFiles(data.folders, data.files);
   } catch(err) {
     list.innerHTML = `<div style="padding:40px; text-align:center; color:var(--danger)">Errore: ${err.message}</div>`;
   }
+}
+
+function refreshFolder() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  cache.invalidate(currentFolderId);
+  cache.setFolders(null);
+  loadFolder(currentFolderId, true).finally(() => {
+    setTimeout(() => btn.classList.remove('spinning'), 500);
+  });
 }
 
 function renderBreadcrumb(path) {
@@ -541,27 +555,29 @@ function renderFiles(folders, files) {
   let html = '';
   folders.forEach(f => {
     html += `
-      <div class="row folder" onclick="loadFolder('${f.id}')">
+      <div class="row folder" id="row-${f.id}" onclick="loadFolder('${f.id}')">
         <div class="row-icon">📁</div>
         <div class="row-name">${escapeHtml(f.name)}</div>
         <div class="row-meta">--</div>
         <div class="row-actions">
-          <button class="btn-icon" onclick="event.stopPropagation(); prepareRename('${f.id}', true, '${escapeHtml(f.name)}')">✎</button>
-          <button class="btn-icon danger" onclick="event.stopPropagation(); deleteItem('${f.id}', true)">🗑</button>
+          <button title="Rinomina" class="btn-icon" onclick="event.stopPropagation(); prepareRename('${f.id}', true, '${escapeHtml(f.name)}')">✎</button>
+          <button title="Elimina" class="btn-icon danger" onclick="event.stopPropagation(); deleteItem('${f.id}', true)">🗑</button>
         </div>
       </div>`;
   });
 
   files.forEach(f => {
     html += `
-      <div class="row">
+      <div class="row" id="row-${f.id}">
         <div class="row-icon">${getIcon(f.mime)}</div>
         <div class="row-name">${escapeHtml(f.name)}</div>
         <div class="row-meta">${f.size}</div>
         <div class="row-actions">
-          <button class="btn-icon" onclick="downloadFile('${f.id}')">↓</button>
-          <button class="btn-icon" onclick="prepareRename('${f.id}', false, '${escapeHtml(f.name)}')">✎</button>
-          <button class="btn-icon danger" onclick="deleteItem('${f.id}', false)">🗑</button>
+          <button title="Anteprima" class="btn-icon" onclick="previewFile('${f.id}', '${escapeHtml(f.name)}', '${f.mime}')">👁️</button>
+          <button title="Rinomina" class="btn-icon" onclick="prepareRename('${f.id}', false, '${escapeHtml(f.name)}')">✎</button>
+          <button title="Sposta" class="btn-icon" onclick="prepareMove('${f.id}')">⬈</button>
+          <button title="Scarica" class="btn-icon" onclick="downloadFile('${f.id}')">↓</button>
+          <button title="Elimina" class="btn-icon danger" onclick="deleteItem('${f.id}', false)">🗑</button>
         </div>
       </div>`;
   });
@@ -569,17 +585,18 @@ function renderFiles(folders, files) {
   list.innerHTML = html;
 }
 
-// Azioni File
+// ============================================================
+// AZIONI SUI FILE
+// ============================================================
 async function createFolder() {
   const name = document.getElementById('newFolderName').value.trim();
   if(!name) return;
   closeModal('folderModal');
-  showToast("Creazione cartella...");
+  cache.invalidate(currentFolderId);
   try {
     await apiPost({ action: 'createFolder', name, parentId: currentFolderId || '' });
     document.getElementById('newFolderName').value = '';
-    loadFolder(currentFolderId);
-    showToast("Cartella creata");
+    loadFolder(currentFolderId, true);
   } catch(e) { showToast(e.message); }
 }
 
@@ -593,33 +610,93 @@ async function renameItem() {
   const newName = document.getElementById('renameInput').value.trim();
   if(!newName) return;
   closeModal('renameModal');
-  showToast("Rinominazione...");
+  cache.invalidate(currentFolderId);
   try {
     await apiPost({ action: 'renameItem', id: renameTarget.id, isFolder: renameTarget.isFolder, name: newName });
-    loadFolder(currentFolderId);
-    showToast("Rinominato con successo");
+    loadFolder(currentFolderId, true);
   } catch(e) { showToast(e.message); }
 }
 
 async function deleteItem(id, isFolder) {
   if(!confirm("Sei sicuro di voler eliminare questo elemento?")) return;
-  showToast("Eliminazione in corso...");
+  const row = document.getElementById('row-' + id);
+  if (row) row.classList.add('removing');
+  cache.invalidate(currentFolderId);
   try {
     await apiPost({ action: 'deleteItem', id, isFolder });
-    loadFolder(currentFolderId);
-    showToast("Elemento eliminato");
+    loadFolder(currentFolderId, true);
   } catch(e) { showToast(e.message); }
 }
 
 async function downloadFile(id) {
-  showToast("Recupero link di download...");
+  showToast("Preparazione download...");
   try {
     const data = await api({ action: 'getDownloadUrl', fileId: id });
     window.open(data.url, '_blank');
   } catch(e) { showToast(e.message); }
 }
 
-// Upload (Semplificato per UX)
+// SPOSTA
+async function prepareMove(id) {
+  moveTargetId = id;
+  openModal('moveModal');
+  const sel = document.getElementById('moveTarget');
+  sel.innerHTML = '<option>Caricamento cartelle...</option>';
+  
+  let folders = cache.getFolders();
+  if (!folders) {
+    try {
+      const res = await api({ action: 'getAllFolders' });
+      folders = res.folders;
+      cache.setFolders(folders);
+    } catch(e) { sel.innerHTML = `<option>Errore</option>`; return; }
+  }
+  
+  sel.innerHTML = folders.map(f => `<option value="${f.id}">${escapeHtml(f.name)}</option>`).join('');
+}
+
+async function moveFile() {
+  const targetId = document.getElementById('moveTarget').value;
+  closeModal('moveModal');
+  const row = document.getElementById('row-' + moveTargetId);
+  if(row) row.classList.add('removing');
+  
+  cache.invalidate(currentFolderId);
+  cache.invalidate(targetId);
+  
+  try {
+    await apiPost({ action: 'moveFile', fileId: moveTargetId, targetId });
+    loadFolder(currentFolderId, true);
+    showToast("File spostato");
+  } catch(e) { showToast(e.message); }
+}
+
+// ANTEPRIMA
+async function previewFile(id, name, mime) {
+  document.getElementById('ovT').textContent = name;
+  document.getElementById('ovB').innerHTML = '<div class="spinner"></div>';
+  document.getElementById('overlay').classList.add('active');
+  
+  try {
+    const data = await api({ action: 'getPreviewUrl', fileId: id, mime });
+    if (data.url.startsWith('data:')) {
+      document.getElementById('ovB').innerHTML = mime.startsWith('image/')
+        ? `<img src="${data.url}" alt="${name}">`
+        : `<iframe src="${data.url}"></iframe>`;
+    } else {
+      window.open(data.url, '_blank');
+      closePreview();
+    }
+  } catch(e) {
+    document.getElementById('ovB').innerHTML = `<div style="color:var(--danger)">Errore: ${e.message}</div>`;
+  }
+}
+
+function closePreview() { document.getElementById('overlay').classList.remove('active'); }
+
+// ============================================================
+// UPLOAD AVANZATO (CHUNK)
+// ============================================================
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('dropzone').classList.remove('drag');
@@ -628,18 +705,24 @@ function handleDrop(e) {
 
 async function handleFiles(files) {
   if (files.length === 0) return;
-  for (let file of files) {
-    await uploadSingleFile(file);
-  }
-  loadFolder(currentFolderId);
+  for (let file of files) { uploadSingleFile(file); }
 }
 
 async function uploadSingleFile(file) {
-  showToast(`Inizio caricamento: ${file.name}`);
+  const uid = 'up_' + Date.now() + Math.random().toString(36).slice(2);
+  const panel = document.getElementById('upPanel');
+  panel.insertAdjacentHTML('beforeend', `
+    <div id="${uid}" class="up-card">
+      <div class="up-filename">${escapeHtml(file.name)}</div>
+      <div class="up-status"><span id="${uid}_txt">Avvio...</span> <span id="${uid}_pct">0%</span></div>
+      <div class="up-bar"><div class="up-fill" id="${uid}_bar" style="width:0%"></div></div>
+    </div>
+  `);
+
   const tot = Math.ceil(file.size / CHUNK_SIZE) || 1;
   let idx = 0, fId = null;
 
-  while(idx < tot) {
+  async function sendNext() {
     const slice = file.slice(idx * CHUNK_SIZE, (idx + 1) * CHUNK_SIZE);
     const b64 = await toBase64(slice);
     try {
@@ -650,13 +733,26 @@ async function uploadSingleFile(file) {
       });
       fId = res.fileId;
       idx++;
-      if (idx % 2 === 0 || idx === tot) showToast(`Caricamento ${file.name}: ${Math.round((idx/tot)*100)}%`);
+      const pct = Math.round((idx / tot) * 100);
+      document.getElementById(`${uid}_txt`).textContent = `Caricamento chunk ${idx}/${tot}`;
+      document.getElementById(`${uid}_pct`).textContent = pct + '%';
+      document.getElementById(`${uid}_bar`).style.width = pct + '%';
+      
+      if (idx < tot) {
+        await sendNext();
+      } else {
+        document.getElementById(`${uid}_txt`).textContent = '✅ Completato';
+        document.getElementById(`${uid}_txt`).style.color = '#34d399';
+        cache.invalidate(currentFolderId);
+        setTimeout(() => { document.getElementById(uid)?.remove(); loadFolder(currentFolderId, true); }, 2000);
+      }
     } catch(err) {
-      showToast(`Errore upload ${file.name}: ${err.message}`);
-      return;
+      document.getElementById(`${uid}_txt`).textContent = '❌ Errore';
+      document.getElementById(`${uid}_txt`).style.color = 'var(--danger)';
     }
   }
-  showToast(`Completato: ${file.name}`);
+  
+  sendNext();
 }
 
 function toBase64(blob) {
@@ -670,11 +766,6 @@ function toBase64(blob) {
 // ============================================================
 // ADMIN (Gestione Utenti)
 // ============================================================
-async function openAdmin() {
-  openModal('adminModal');
-  loadAdminUsers();
-}
-
 async function loadAdminUsers() {
   const ui = document.getElementById('usersListUI');
   ui.innerHTML = '<div style="padding:20px; text-align:center">Caricamento...</div>';
@@ -692,17 +783,13 @@ async function loadAdminUsers() {
       `;
     });
     ui.innerHTML = html;
-  } catch(e) {
-    ui.innerHTML = `<div style="padding:20px; color:var(--danger)">Errore: ${e.message}</div>`;
-  }
+  } catch(e) { ui.innerHTML = `<div style="padding:20px; color:var(--danger)">Errore: ${e.message}</div>`; }
 }
 
 async function addUser() {
   const u = document.getElementById('newAdminUser').value.trim();
   const p = document.getElementById('newAdminPwd').value.trim();
   if(!u || !p) return showToast("Inserisci Username e Password");
-  
-  showToast("Aggiunta in corso...");
   try {
     await apiPost({ action: 'manageUsers', subAction: 'add', newUsername: u, newPassword: p });
     document.getElementById('newAdminUser').value = '';
@@ -714,7 +801,6 @@ async function addUser() {
 
 async function deleteUser(username) {
   if(!confirm(`Vuoi rimuovere l'utente ${username}?`)) return;
-  showToast("Rimozione in corso...");
   try {
     await apiPost({ action: 'manageUsers', subAction: 'delete', targetUser: username });
     loadAdminUsers();
