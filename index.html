@@ -338,6 +338,18 @@ input:focus, select:focus {
   </div>
 </div>
 
+<!-- MODAL: CONFERMA ELIMINAZIONE -->
+<div class="modal-overlay" id="confirmModal" onclick="closeOnBg(event, 'confirmModal')">
+  <div class="modal glass">
+    <h3 id="confTitle">Conferma</h3>
+    <p id="confText" style="color:var(--text-muted); font-size:14px; margin-bottom:24px; white-space:pre-wrap; line-height:1.5; max-height:200px; overflow-y:auto;"></p>
+    <div class="actions">
+      <button class="btn-secondary" onclick="closeModal('confirmModal')">Annulla</button>
+      <button class="btn-danger" id="confBtn" style="flex:1">Elimina</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: GESTIONE UTENTI (ADMIN) -->
 <div class="modal-overlay" id="adminModal" onclick="closeOnBg(event, 'adminModal')">
   <div class="modal glass" style="max-width: 500px;">
@@ -618,14 +630,38 @@ async function renameItem() {
 }
 
 async function deleteItem(id, isFolder) {
-  if(!confirm("Sei sicuro di voler eliminare questo elemento?")) return;
-  const row = document.getElementById('row-' + id);
-  if (row) row.classList.add('removing');
-  cache.invalidate(currentFolderId);
-  try {
-    await apiPost({ action: 'deleteItem', id, isFolder });
-    loadFolder(currentFolderId, true);
-  } catch(e) { showToast(e.message); }
+  let title = isFolder ? 'Elimina Cartella' : 'Elimina File';
+  let text = isFolder ? 'Sei sicuro di voler eliminare questa cartella?' : 'Sei sicuro di voler eliminare questo file?';
+
+  if (isFolder) {
+    showToast("Verifica contenuto cartella...");
+    try {
+      const check = await apiPost({ action: 'checkFolderContent', id });
+      if (!check.isEmpty) {
+        text = '⚠️ ATTENZIONE! La cartella NON è vuota.\n\nContiene:\n' + check.list + '\n\nSei sicuro di voler eliminare TUTTO?';
+      }
+    } catch (e) {
+      return showToast("Errore verifica cartella: " + e.message);
+    }
+  }
+
+  document.getElementById('confTitle').textContent = title;
+  document.getElementById('confText').textContent = text;
+  
+  document.getElementById('confBtn').onclick = async () => {
+    closeModal('confirmModal');
+    const row = document.getElementById('row-' + id);
+    if (row) row.classList.add('removing');
+    cache.invalidate(currentFolderId);
+    showToast("Eliminazione in corso...");
+    try {
+      await apiPost({ action: 'deleteItem', id, isFolder });
+      loadFolder(currentFolderId, true);
+      showToast("Elemento eliminato");
+    } catch(e) { showToast(e.message); }
+  };
+  
+  openModal('confirmModal');
 }
 
 async function downloadFile(id) {
